@@ -17,6 +17,7 @@ use AutoMapper\Tests\Fixtures\AddressDTOWithReadonlyPromotedProperty;
 use AutoMapper\Tests\Fixtures\AddressType;
 use AutoMapper\Tests\Fixtures\AddressWithEnum;
 use AutoMapper\Tests\Fixtures\ClassWithMapToContextAttribute;
+use AutoMapper\Tests\Fixtures\ClassWithNullablePropertyInConstructor;
 use AutoMapper\Tests\Fixtures\ClassWithPrivateProperty;
 use AutoMapper\Tests\Fixtures\Fish;
 use AutoMapper\Tests\Fixtures\ObjectWithDateTime;
@@ -92,7 +93,7 @@ class AutoMapperTest extends AutoMapperBaseTest
 
     public function testAutoMapperFromArrayCustomDateTime(): void
     {
-        $this->buildAutoMapper(mapPrivatePropertiesAndMethod: true, classPrefix: 'CustomDateTime_');
+        $this->buildAutoMapper(classPrefix: 'CustomDateTime_');
 
         $dateTime = \DateTime::createFromFormat(\DateTime::RFC3339, '1987-04-30T06:00:00Z');
         $customFormat = 'U';
@@ -580,6 +581,8 @@ class AutoMapperTest extends AutoMapperBaseTest
         $address->setCity('some city');
         $user->setAddress($address);
 
+        $this->buildAutoMapper(mapPrivatePropertiesAndMethod: true);
+
         /** @var Fixtures\UserDTO $userDto */
         $userDto = $this->autoMapper->map($user, Fixtures\UserDTO::class, [MapperContext::ALLOWED_ATTRIBUTES => ['id', 'age', 'address']]);
 
@@ -614,6 +617,7 @@ class AutoMapperTest extends AutoMapperBaseTest
         });
 
         $user = new Fixtures\User(1, 'yolo', '13');
+
         $userDto = $this->autoMapper->map($user, Fixtures\UserDTOMerged::class);
 
         self::assertArrayHasKey('name', $userDto->getProperties());
@@ -723,13 +727,6 @@ class AutoMapperTest extends AutoMapperBaseTest
         $pet = $this->autoMapper->map($data, Fixtures\Pet::class);
 
         self::assertInstanceOf(Fixtures\Cat::class, $pet);
-    }
-
-    public function testAutomapNull(): void
-    {
-        $array = $this->autoMapper->map(null, 'array');
-
-        self::assertNull($array);
     }
 
     public function testInvalidMappingBothArray(): void
@@ -938,7 +935,7 @@ class AutoMapperTest extends AutoMapperBaseTest
         self::assertEquals('foobar', $entity->getName());
     }
 
-    public function testAdderAndRemoverWithClass()
+    public function testAdderAndRemoverWithClass(): void
     {
         $this->buildAutoMapper(mapPrivatePropertiesAndMethod: true);
 
@@ -959,7 +956,7 @@ class AutoMapperTest extends AutoMapperBaseTest
         self::assertSame('dog', $petOwnerData->getPets()[1]->type);
     }
 
-    public function testAdderAndRemoverWithInstance()
+    public function testAdderAndRemoverWithInstance(): void
     {
         $this->buildAutoMapper(mapPrivatePropertiesAndMethod: true);
 
@@ -989,7 +986,7 @@ class AutoMapperTest extends AutoMapperBaseTest
         self::assertSame('dog', $petOwner->getPets()[2]->type);
     }
 
-    public function testAdderAndRemoverWithNull()
+    public function testAdderAndRemoverWithNull(): void
     {
         $petOwner = [
             'pets' => [
@@ -1004,7 +1001,7 @@ class AutoMapperTest extends AutoMapperBaseTest
         self::assertCount(0, $petOwnerData->getPets());
     }
 
-    public function testIssueTargetToPopulate()
+    public function testIssueTargetToPopulate(): void
     {
         $source = new Fixtures\IssueTargetToPopulate\VatModel();
         $source->setCountryCode('fr');
@@ -1205,6 +1202,14 @@ class AutoMapperTest extends AutoMapperBaseTest
         self::assertSame(
             [],
             $this->autoMapper->map(new ClassWithPrivateProperty('foo'), 'array')
+        );
+    }
+
+    public function testItCanMapFromArrayWithMissingNullableProperty(): void
+    {
+        self::assertEquals(
+            new ClassWithNullablePropertyInConstructor(foo: 1),
+            $this->autoMapper->map(['foo' => 1], ClassWithNullablePropertyInConstructor::class)
         );
     }
 }

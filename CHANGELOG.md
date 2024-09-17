@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- [GH#10](https://github.com/jolicode/automapper/pull/10) Introduce custom transformers
+
+## [8.1.0] - 2023-12-14
+### Added
+- [GH#22](https://github.com/jolicode/automapper/pull/22) Added generic AST extractor
+- [GH#21](https://github.com/jolicode/automapper/pull/21) Add VERSION constants within AutoMapper class and use it for transformers hashes
+ 
+### Changed
+- [GH#19](https://github.com/jolicode/automapper/pull/19) Use attributes everywhere instead of annotations
+- [GH#18](https://github.com/jolicode/automapper/pull/18) Symfony 7 support
+
+## [8.0.2] - 2023-11-06
+### Added
+- [GH#11](https://github.com/jolicode/automapper/pull/11) Added phpstan level 5 in CI
+
+### Fixed
+- [GH#9](https://github.com/jolicode/automapper/pull/9) fix: `mapPrivatePropertiesAndMethod` should not be mandatory
+- [GH#15](https://github.com/jolicode/automapper/pull/15) fix: check class existence in SymfonyUidTransformerFactory
+
+## [8.0.1] - 2023-10-04
+### Changed
+- [GH#6](https://github.com/jolicode/automapper/pull/6) Document all AST code by explaining what it generates
+
+### Fixed
+- [GH#7](https://github.com/jolicode/automapper/pull/7) Fix NullableTransformer should check if array key exists
+
+## [8.0.0] - 2023-09-26
+### Changed
+- Modernization, PHP 8.2 and typed properties everywhere
+- [GH#1](https://github.com/jolicode/automapper/pull/1) Better private properties handling
+
 ### Fixed
 - [GH#753](https://github.com/janephp/janephp/pull/753) Fix: AutoMapper should accept getters with default properties
 
@@ -157,4 +189,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * [AutoMapper] [GH#179](https://github.com/janephp/janephp/pull/179) Fixing incompatible changes in Symfony 5.0
 
-[Unreleased]: https://github.com/jolicode/automapper/compare/v7.5.3...HEAD
+[Unreleased]: https://github.com/jolicode/automapper/compare/8.1.0...HEAD
+[8.1.0]: https://github.com/janephp/janephp/compare/8.0.2...8.1.0
+[8.0.2]: https://github.com/janephp/janephp/compare/8.0.1...8.0.2
+[8.0.1]: https://github.com/janephp/janephp/compare/8.0.0...8.0.1

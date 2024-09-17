@@ -13,17 +13,17 @@ use AutoMapper\Tests\Fixtures;
 use AutoMapper\Transformer\ArrayTransformerFactory;
 use AutoMapper\Transformer\BuiltinTransformerFactory;
 use AutoMapper\Transformer\ChainTransformerFactory;
+use AutoMapper\Transformer\CustomTransformer\CustomTransformersRegistry;
 use AutoMapper\Transformer\DateTimeTransformerFactory;
 use AutoMapper\Transformer\MultipleTransformerFactory;
 use AutoMapper\Transformer\NullableTransformerFactory;
 use AutoMapper\Transformer\ObjectTransformerFactory;
 use AutoMapper\Transformer\UniqueTypeTransformerFactory;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 
 /**
  * @author Baptiste Leduc <baptiste.leduc@gmail.com>
@@ -40,7 +40,7 @@ class FromSourceMappingExtractorTest extends AutoMapperBaseTest
 
     private function fromSourceMappingExtractorBootstrap(bool $private = true): void
     {
-        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
+        $classMetadataFactory = new ClassMetadataFactory(new AttributeLoader());
         $flags = ReflectionExtractor::ALLOW_PUBLIC;
 
         if ($private) {
@@ -63,6 +63,7 @@ class FromSourceMappingExtractorTest extends AutoMapperBaseTest
             $reflectionExtractor,
             $reflectionExtractor,
             $transformerFactory,
+            new CustomTransformersRegistry(),
             $classMetadataFactory
         );
 

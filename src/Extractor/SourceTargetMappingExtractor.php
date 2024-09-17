@@ -42,9 +42,11 @@ class SourceTargetMappingExtractor extends MappingExtractor
                     continue;
                 }
 
-                $sourceTypes = $this->propertyInfoExtractor->getTypes($mapperMetadata->getSource(), $property);
-                $targetTypes = $this->propertyInfoExtractor->getTypes($mapperMetadata->getTarget(), $property);
-                $transformer = $this->transformerFactory->getTransformer($sourceTypes, $targetTypes, $mapperMetadata);
+                $sourceTypes = $this->propertyInfoExtractor->getTypes($mapperMetadata->getSource(), $property) ?? [];
+                $targetTypes = $this->propertyInfoExtractor->getTypes($mapperMetadata->getTarget(), $property) ?? [];
+
+                $transformer = $this->customTransformerRegistry->getCustomTransformerClass($mapperMetadata, $sourceTypes, $targetTypes, $property)
+                    ?? $this->transformerFactory->getTransformer($sourceTypes, $targetTypes, $mapperMetadata);
 
                 if (null === $transformer) {
                     continue;
@@ -79,7 +81,7 @@ class SourceTargetMappingExtractor extends MappingExtractor
                     $maxDepth,
                     $this->isIgnoredProperty($mapperMetadata->getSource(), $property),
                     $this->isIgnoredProperty($mapperMetadata->getTarget(), $property),
-                    PropertyReadInfo::VISIBILITY_PUBLIC === $this->readInfoExtractor->getReadInfo($mapperMetadata->getSource(), $property)?->getVisibility() ?? true,
+                    PropertyReadInfo::VISIBILITY_PUBLIC === ($this->readInfoExtractor->getReadInfo($mapperMetadata->getSource(), $property)?->getVisibility() ?? PropertyReadInfo::VISIBILITY_PUBLIC),
                 );
             }
         }

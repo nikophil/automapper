@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace AutoMapper\Normalizer;
 
 use AutoMapper\AutoMapperInterface;
+use AutoMapper\AutoMapperRegistryInterface;
 use AutoMapper\MapperContext;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -17,7 +17,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
  *
  * @author Joel Wurtz <jwurtz@jolicode.com>
  */
-readonly class AutoMapperNormalizer implements NormalizerInterface, DenormalizerInterface, CacheableSupportsMethodInterface
+readonly class AutoMapperNormalizer implements NormalizerInterface, DenormalizerInterface
 {
     private const SERIALIZER_CONTEXT_MAPPING = [
         AbstractNormalizer::GROUPS => MapperContext::GROUPS,
@@ -30,11 +30,11 @@ readonly class AutoMapperNormalizer implements NormalizerInterface, Denormalizer
     ];
 
     public function __construct(
-        private AutoMapperInterface $autoMapper,
+        private AutoMapperInterface&AutoMapperRegistryInterface $autoMapper,
     ) {
     }
 
-    public function normalize(mixed $object, string $format = null, array $context = []): float|object|int|bool|array|string|null
+    public function normalize(mixed $object, string $format = null, array $context = []): array|string|int|float|bool|\ArrayObject|null
     {
         return $this->autoMapper->map($object, 'array', $this->createAutoMapperContext($context));
     }
@@ -44,23 +44,23 @@ readonly class AutoMapperNormalizer implements NormalizerInterface, Denormalizer
         return $this->autoMapper->map($data, $type, $this->createAutoMapperContext($context));
     }
 
-    public function supportsNormalization(mixed $data, string $format = null): bool
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         if (!\is_object($data) || $data instanceof \stdClass) {
             return false;
         }
 
-        return $this->autoMapper->hasMapper(\get_class($data), 'array');
+        return $this->autoMapper->hasMapper($data::class, 'array');
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null): bool
+    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         return $this->autoMapper->hasMapper('array', $type);
     }
 
-    public function hasCacheableSupportsMethod(): bool
+    public function getSupportedTypes(?string $format): array
     {
-        return true;
+        return ['object' => true];
     }
 
     private function createAutoMapperContext(array $serializerContext = []): array
